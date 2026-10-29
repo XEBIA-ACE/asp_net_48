@@ -1,6 +1,7 @@
 ﻿using MicroProjectApplication.Data;
 using MicroProjectApplication.Models;
 using MicroProjectApplication.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +24,8 @@ namespace MicroProjectApplication.Repositories
         public Customer Add(Customer customer)
         {
             customer.Id = InMemoryDataStore.GetNextCustomerId();
+            customer.CreatedAt = DateTime.UtcNow;
+            customer.UpdatedAt = customer.CreatedAt;
             InMemoryDataStore.Customers.Add(customer);
             return customer;
         }
@@ -35,6 +38,7 @@ namespace MicroProjectApplication.Repositories
 
             existing.Name = updatedCustomer.Name;
             existing.City = updatedCustomer.City;
+            existing.UpdatedAt = DateTime.UtcNow;
 
             return existing;
         }

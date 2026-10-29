@@ -1,4 +1,5 @@
 ﻿using MicroProjectApplication.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,9 +16,13 @@ namespace MicroProjectApplication.Data
 
         public static List<Customer> Customers = new List<Customer>
         {
-            new Customer { Id = 1, Name = "Mark", City = "Delhi" },
-            new Customer { Id = 2, Name = "Ravi", City = "Bangalore" }
+            new Customer { Id = 1, Name = "Mark", City = "Delhi", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Customer { Id = 2, Name = "Ravi", City = "Bangalore", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         };
+
+        public static readonly object UsersLock = new object();
+
+        public static List<User> Users = new List<User>();
 
         public static List<Order> Orders = new List<Order>
         {
@@ -33,6 +38,11 @@ namespace MicroProjectApplication.Data
         public static int GetNextCustomerId()
         {
             return Customers.Count == 0 ? 1 : Customers.Max(x => x.Id) + 1;
+        }
+
+        public static int GetNextUserId()
+        {
+            return Users.Count == 0 ? 1 : Users.Max(x => x.Id) + 1;
         }
 
         public static int GetNextOrderId()
