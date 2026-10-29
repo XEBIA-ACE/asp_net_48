@@ -1,6 +1,7 @@
 bin/
 obj/
 .vs/
+backend/target/
 packages/
 *.user
 *.suo
