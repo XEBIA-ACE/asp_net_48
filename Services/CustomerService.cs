@@ -40,6 +40,23 @@ namespace MicroProjectApplication.Services
             return _customerRepository.Update(id, customer);
         }
 
+        // Partial update: only non-null Name/City values are applied.
+        public Customer Patch(int id, Customer customer)
+        {
+            if (customer == null)
+                return null;
+
+            var existing = _customerRepository.GetById(id);
+            if (existing == null)
+                return null;
+
+            return _customerRepository.Update(id, new Customer
+            {
+                Name = customer.Name ?? existing.Name,
+                City = customer.City ?? existing.City
+            });
+        }
+
         public bool Delete(int id)
         {
             return _customerRepository.Delete(id);

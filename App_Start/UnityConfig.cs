@@ -22,6 +22,9 @@ namespace MicroProjectApplication
             container.RegisterType<ICustomerRepository, CustomerRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IOrderRepository, OrderRepository>(new HierarchicalLifetimeManager());
 
+            container.RegisterType<IUserRepository, UserRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IAuthService, AuthService>(new HierarchicalLifetimeManager());
+
             container.RegisterType<IProductService, ProductService>(new HierarchicalLifetimeManager());
             container.RegisterType<ICustomerService, CustomerService>(new HierarchicalLifetimeManager());
             container.RegisterType<IOrderService, OrderService>(new HierarchicalLifetimeManager());

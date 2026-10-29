@@ -1,10 +1,12 @@
 ﻿using MicroProjectApplication.Models;
 using MicroProjectApplication.Services.Interfaces;
+using System.Net;
 using System.Web.Http;
 
 namespace MicroProjectApplication.Controllers
 {
-    [RoutePrefix("api/customers")]
+    // US-001 / SVC-002: customer CRUD under /api/v1/customers
+    [RoutePrefix("api/v1/customers")]
     public class CustomersController : ApiController
     {
         private readonly ICustomerService _customerService;
@@ -27,7 +29,7 @@ namespace MicroProjectApplication.Controllers
         {
             var customer = _customerService.GetById(id);
             if (customer == null)
-                return NotFound();
+                return CustomerNotFound(id);
 
             return Ok(customer);
         }
@@ -47,11 +49,28 @@ namespace MicroProjectApplication.Controllers
         [Route("{id:int}")]
         public IHttpActionResult Update(int id, Customer customer)
         {
+            if (customer == null)
+                return BadRequest("Invalid customer.");
+
             var updated = _customerService.Update(id, customer);
             if (updated == null)
-                return NotFound();
+                return CustomerNotFound(id);
 
             return Ok(updated);
+        }
+
+        [HttpPatch]
+        [Route("{id:int}")]
+        public IHttpActionResult Patch(int id, Customer customer)
+        {
+            if (customer == null)
+                return BadRequest("Invalid customer.");
+
+            var patched = _customerService.Patch(id, customer);
+            if (patched == null)
+                return CustomerNotFound(id);
+
+            return Ok(patched);
         }
 
         [HttpDelete]
@@ -60,9 +79,19 @@ namespace MicroProjectApplication.Controllers
         {
             var deleted = _customerService.Delete(id);
             if (!deleted)
-                return NotFound();
+                return CustomerNotFound(id);
 
             return Ok("Customer deleted successfully.");
+        }
+
+        // Standardized Not Found payload for /api/v1/customers/{id} (ErrorResponse placeholder, GAP-02).
+        private IHttpActionResult CustomerNotFound(int id)
+        {
+            return Content(HttpStatusCode.NotFound, new ErrorResponse
+            {
+                Code = "customer_not_found",
+                Message = "Customer with id " + id + " was not found."
+            });
         }
     }
 }

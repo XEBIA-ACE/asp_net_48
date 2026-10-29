@@ -9,6 +9,7 @@ namespace MicroProjectApplication.Services.Interfaces
         Customer GetById(int id);
         Customer Create(Customer customer);
         Customer Update(int id, Customer customer);
+        Customer Patch(int id, Customer customer);
         bool Delete(int id);
     }
 }
