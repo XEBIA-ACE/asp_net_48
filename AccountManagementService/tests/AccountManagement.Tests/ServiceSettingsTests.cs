@@ -81,6 +81,34 @@ public class ServiceSettingsTests
         Assert.Contains(ServiceSettings.ElasticsearchUrlKey, ex.Message, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("not a connection string")]
+    [InlineData("Host=db.test;Bogus=1")]
+    [InlineData("Database=accounts;Username=u")]
+    public void Load_WithMalformedDatabaseConnectionString_Fails(string connectionString)
+    {
+        var values = ValidValues();
+        values[ServiceSettings.DatabaseConnectionStringKey] = connectionString;
+
+        var ex = Assert.Throws<InvalidOperationException>(() => ServiceSettings.Load(Build(values)));
+
+        Assert.Contains(ServiceSettings.DatabaseConnectionStringKey, ex.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain(connectionString, ex.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("bogus=1")]
+    [InlineData(",,,")]
+    public void Load_WithMalformedRedisConnectionString_Fails(string connectionString)
+    {
+        var values = ValidValues();
+        values[ServiceSettings.RedisConnectionStringKey] = connectionString;
+
+        var ex = Assert.Throws<InvalidOperationException>(() => ServiceSettings.Load(Build(values)));
+
+        Assert.Contains(ServiceSettings.RedisConnectionStringKey, ex.Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void Load_ErrorMessages_DoNotContainSecretValues()
     {

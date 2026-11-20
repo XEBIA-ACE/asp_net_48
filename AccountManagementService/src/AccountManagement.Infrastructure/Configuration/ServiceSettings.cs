@@ -1,5 +1,7 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
+using StackExchange.Redis;
 
 namespace AccountManagement.Infrastructure.Configuration;
 
@@ -54,6 +56,16 @@ public sealed record ServiceSettings(
             errors.Add($"{ElasticsearchUrlKey} must be an absolute http(s) URL.");
         }
 
+        if (!IsValidDatabaseConnectionString(configuration[DatabaseConnectionStringKey]!))
+        {
+            errors.Add($"{DatabaseConnectionStringKey} must be a valid PostgreSQL (Npgsql) connection string with a Host.");
+        }
+
+        if (!IsValidRedisConnectionString(configuration[RedisConnectionStringKey]!))
+        {
+            errors.Add($"{RedisConnectionStringKey} must be a valid StackExchange.Redis configuration string with an endpoint.");
+        }
+
         if (errors.Count > 0)
         {
             throw new InvalidOperationException($"Invalid environment configuration: {string.Join(" ", errors)}");
@@ -64,5 +76,29 @@ public sealed record ServiceSettings(
             configuration[DatabaseConnectionStringKey]!,
             configuration[RedisConnectionStringKey]!,
             elasticsearchUri!);
+    }
+
+    private static bool IsValidDatabaseConnectionString(string value)
+    {
+        try
+        {
+            return !string.IsNullOrWhiteSpace(new NpgsqlConnectionStringBuilder(value).Host);
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+    }
+
+    private static bool IsValidRedisConnectionString(string value)
+    {
+        try
+        {
+            return ConfigurationOptions.Parse(value).EndPoints.Count > 0;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
     }
 }

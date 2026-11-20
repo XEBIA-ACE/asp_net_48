@@ -26,7 +26,7 @@ own solution and does not change the existing application.
 
 ## Configuration
 
-Configuration comes **only** from environment variables. The service fails fast at startup and
+Configuration comes **only** from environment variables. Values are format-checked (port range, Npgsql/Redis connection-string syntax, URL). The service fails fast at startup and
 names every missing or invalid variable. It never prints their values.
 
 | Variable | Description |
